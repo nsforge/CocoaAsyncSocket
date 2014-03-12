@@ -1972,6 +1972,17 @@ enum GCDAsyncUdpSocketConfig
 			return SOCKET_NULL;
 		}
 		
+		int reuseport = 1;
+		status = setsockopt(socketFD, SOL_SOCKET, SO_REUSEPORT, &reuseport, sizeof(reuseport));
+		if (status == -1)
+		{
+			if (errPtr)
+				*errPtr = [self errnoErrorWithReason:@"Error enabling port reuse (setsockopt)"];
+			
+			close(socketFD);
+			return SOCKET_NULL;
+		}
+		
 		int nosigpipe = 1;
 		status = setsockopt(socketFD, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
 		if (status == -1)
